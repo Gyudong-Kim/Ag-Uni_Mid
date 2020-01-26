@@ -1,6 +1,6 @@
 module.exports = {
     judgeCtrSysOn: (json) => {
-        
+
     },
 
     judgeCtrSysOff: (json) => {

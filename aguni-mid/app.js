@@ -23,6 +23,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set Routers
 app.use('/control', controlRouter);
 
+// test
+//const testRepo = require('./repositories/test-repo');
+//let rows = testRepo.selectAll();
+//console.info('rows -> ' + Buffer.from(JSON.stringify(rows)));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
