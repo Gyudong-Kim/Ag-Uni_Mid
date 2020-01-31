@@ -3,8 +3,8 @@ var mariadb = require('mariadb');
 
 // mariadb config object
 var config = {
-    host: "192.168.0.19",
-    //host: "192.168.0.43",
+    //host: "192.168.0.19",
+    host: "192.168.0.43",
     user: "root",
     password: "tkddnjs234",
     database: "aguni_mid",
