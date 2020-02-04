@@ -2,6 +2,7 @@ var zigbeeService = require('../services/zigbee-service');
 var systemService = require('../services/system-service');
 var judgeService = require('../services/judge-service');
 var constants = require('../common/constants');
+var reservService = require('../services/reserve-service');
 
 module.exports = {
     filterAndExecute: (json) => {
@@ -83,15 +84,15 @@ module.exports = {
             // 예약_조명_ON
             case OP_CODE.R_L_001:
                 console.log(json.code + ' === R_L_001');
-                judgeService.judgeReservLenOn(json);
-                zigbeeService.send(json);
+                //judgeService.judgeReservLenOn(json);
+                reservService.addLedReservation(json);
                 break;
 
             // 예약_관리기_산소 공급 ON
             case OP_CODE.R_M_009:
                 console.log(json.code + ' === R_M_009');
-                judgeService.judgeReservAirSupply(json);
-                zigbeeService.send(json);
+                //judgeService.judgeReservAirSupply(json);
+                reservService.addOxygenReservation(json);
                 break;
 
             // 예약_조명_특정 조명 예약 취소

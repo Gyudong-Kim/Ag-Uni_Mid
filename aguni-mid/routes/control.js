@@ -13,9 +13,10 @@ router.post('/code', function(req, res, next) {
         // TODO : delete
         // A temporary alternative code to execute after receiving the opcode execution result from pcb using zigbee
         // this is async execution code after response message is sent to server app that requested to this app
-        res.on('finish', setTimeout(() => {
-            amqpService.codeExecutionResultSender(req.body)
-        }, 10000));
+        //res.on('finish', setTimeout(() => {
+        //    amqpService.codeExecutionResultSender(req.body)
+        //}, 10000));
+        // 예약 기능 테스트 중이라 위 기능은 잠시 disable
 
         res.json({
             tId: req.body.tId,
