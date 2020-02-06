@@ -4,11 +4,13 @@ var macaddress = require('macaddress');
 var sysinfoRepo = require('./../repositories/sysinfo-repo');
 var sensordataRepo = require('./../repositories/sensordata-repo');
 var moment = require('moment');
-
+var publicIp = require('public-ip');
+var natUpnp = require('nat-upnp');
+var requestService = require('./request-service');
 
 module.exports = {
-    start: () => {
-
+    start: async () => {
+        
         macaddress.one('eth0', (err, mac) => {
             if (err) {
                 console.error('cannot search Eth0 MAC address');
@@ -18,9 +20,15 @@ module.exports = {
             sysinfoRepo.select()
                 .then(res => {
                     if (res === null) {
-                        console.log('store Eth0 MAC addr');
-                        sysinfoRepo.insert(mac);
-                    } else {
+                        console.log('no exist Eth0 MAC addr');
+                        publicIp.v4().then(externalIp => {
+                            requestService.waitInterLock({
+                                externalIp: externalIp,
+                                mac: mac
+                            });
+                        })
+                    } 
+                    else {
                         console.log('aleardy exist Eth0 MAC addr');
                     }
                 });
@@ -87,3 +95,27 @@ module.exports = {
         // sensingJob.start();
     }
 }
+
+// const externalIp = await publicIp.v4();
+        // console.info(externalIp);
+        
+        // var client = natUpnp.createClient();
+
+
+        //   client.portUnmapping({
+        //       public: 54444
+        //   });
+
+        // client.portMapping({
+        //     public: 54444,
+        //     private: 3000,
+        //     ttl: 0
+        // }, function(err) {
+        //     console.log(err)
+        //     if (!err) console.info('upnp port mapping successed');
+        //     else      console.info('upnp port mapping failed');
+        // })
+        
+        // client.getMappings({ local: true }, function(err, results) {
+        //     console.info(JSON.stringify(results));
+        // });

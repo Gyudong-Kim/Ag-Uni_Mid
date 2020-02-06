@@ -2,7 +2,8 @@ var amqp = require('amqplib/callback_api')
 var moment = require('moment');
 
 
-const AMQP_URL = `amqp://temp:temp@192.168.0.4:5672` // home and lab
+//const AMQP_URL = `amqp://temp:temp@192.168.0.4:5672` // home and lab
+const AMQP_URL = `amqp://temp:temp@203.250.32.29:5672` // home and lab
 
 const CLOG_ROUTE = 'clog.route'
 const CLOG_TOPIC = 'clog'

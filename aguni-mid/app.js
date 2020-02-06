@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var controlRouter = require('./routes/control');
+var interlockRouter = require('./routes/interlock');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Set Routers
 app.use('/control', controlRouter);
+app.use('/interlock', interlockRouter);
 
 // test
 //const testRepo = require('./repositories/test-repo');

@@ -1,33 +1,55 @@
-// const request = require('request');
+const request = require('request');
 
-// const MAIN_SERVER_URL = 'http://110.13.78.125:8083';
-// const API_SERVER_URL = 'http://110.13.78.125:8084';
+const MAIN_SERVER_URL = 'http://192.168.0.4:8084';
+const API_SERVER_URL = 'http://192.168.0.4:8083';
 
-// const printError = (err) => {
-//     if(err) {
-//         console.error('error -> ' + err);
-//     }
-// }
 
-// module.exports = {
+module.exports = {
 
-//     postSensorDataSet: (dataSet) => {
-//         // 2. 메인 서버로 전송
-//         let options = {
-//             uri: MAIN_SERVER_URL,
-//             mothod: 'POST',
-//             body: {
-//                 dataSet
-//             },
-//             json: true
-//         }
-//         request.post(options, (err, httpResponse, body) => {
-//             if(httpResponse.statusCode !== 201) {
-//                 printError(err);
-//                 reject(err);
-//             } else {
-//                 resolve(body);
-//             }
-//         });
-//     }
-// }
+    waitInterLock: (json) => {
+        let options = {
+            uri: API_SERVER_URL + '/api/mid/interlock/wait',
+            method: 'POST',
+            body: {
+                externalIp: json.externalIp,
+                mac: json.mac
+            },
+            json: true
+        }
+
+        request.post(options, (err, httpResponse, body) => {
+            if(httpResponse.statusCode !== 201) {
+                console.error(err);
+            } else {
+                console.info('change waitable status');
+            }
+        })
+    },
+
+
+    startCultivation: (json) => {
+        let options = {
+            uri: MAIN_SERVER_URL + '/main/cultivation/start',
+            method: 'POST',
+            body: {
+                farmerId: json.farmerId,
+                houseId: json.houseId,
+                cultivationId: json.cultivationId,
+                cropId: json.cropId 
+            },
+            json: true
+        }
+        
+        return new Promise((resolve, reject) => {
+            request.post(options, (err, httpResponse, body) => {
+                if(httpResponse.statusCode !== 201) {
+                    console.error(err);
+                    reject(false);
+                } else {
+                    console.info('start cultivation');
+                    resolve(true);
+                }
+            })
+        });
+    }
+}

@@ -17,6 +17,8 @@
     "mariadb": "^2.1.5",
     "moment": "^2.24.0",
     "morgan": "~1.9.1",
+    "nat-upnp": "^1.1.1",
+    "public-ip": "^4.0.0",
     "request": "^2.88.0"
   }
 }
