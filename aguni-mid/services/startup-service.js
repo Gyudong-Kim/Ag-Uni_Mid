@@ -8,6 +8,23 @@ var publicIp = require('public-ip');
 var natUpnp = require('nat-upnp');
 var requestService = require('./request-service');
 
+const SerialPort = require('serialport');
+const port = new SerialPort('/dev/ttyS0',{baudRate:9600});
+
+var temp='';
+port.on('open', function(){
+	console.log('start');
+});
+
+port.on('readable', function () {
+    console.log('Data1:', port.read());
+})
+
+port.on('data', function(data){
+    temp+=data;
+    console.log(temp.length);
+});
+
 module.exports = {
     start: async () => {
         
@@ -17,7 +34,7 @@ module.exports = {
                 throw err;
             }
 
-            sysinfoRepo.select()
+            sysinfoRepo.selectMac()
                 .then(res => {
                     if (res === null) {
                         console.log('no exist Eth0 MAC addr');

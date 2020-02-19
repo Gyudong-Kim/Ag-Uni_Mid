@@ -3,13 +3,35 @@ var moment = require('moment');
 
 module.exports = {
     
-    select: async () => {
+    selectMac: async () => {
         let conn;
         let pool = db.pool;
 
         try {
             conn = await pool.getConnection();
             const rows = await conn.query("SELECT mac from system");
+            console.info('rows -> ' + JSON.stringify(rows[0]));
+            if(rows[0] === undefined) {
+                return null; // resolve
+            } else {
+                return rows[0]; // resolve
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
+
+
+    select: async (houseViewDataSet) => {
+        let conn;
+        let pool = db.pool;
+
+        try {
+            conn = await pool.getConnection();
+            const rows = await conn.query("SELECT * from system");
             console.info('rows -> ' + JSON.stringify(rows[0]));
             if(rows[0] === undefined) {
                 return null; // resolve
@@ -65,11 +87,12 @@ module.exports = {
             const params = [
                 json.cultivationId,
                 moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
-                true
+                true,
+                false
             ];
 
             await conn.query(
-                `UPDATE system SET cultivation_id = ?, cultivation_start_date = ?, sys_status = ? WHERE farmer_id = ${json.farmerId}`, params);
+                `UPDATE system SET cultivation_id = ?, cultivation_start_date = ?, sys_status = ?, cmod_status = ? WHERE farmer_id = ${json.farmerId}`, params);
 
         } catch (error) {
             console.error(error);

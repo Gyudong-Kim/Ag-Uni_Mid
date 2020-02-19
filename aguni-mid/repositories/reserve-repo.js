@@ -110,7 +110,7 @@ module.exports = {
 
             let params = [mac, json.paramsDetail.isRepeatable, json.paramsDetail.qunttyOfLight]
             let res = await conn.query(
-                "INSERT INTO led_reserv (mac, is_repeat, quntty_of_light) values (?, ?)", params);
+                "INSERT INTO led_reserv (mac, is_repeat, quntty_of_light) values (?, ?, ?)", params);
 
             params = [res.insertId, json.paramsDetail.startDate, json.paramsDetail.endDate, json.paramsDetail.startTime, json.paramsDetail.endTime];
             await conn.query(

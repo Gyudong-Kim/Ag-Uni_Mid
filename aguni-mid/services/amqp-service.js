@@ -18,33 +18,22 @@ module.exports = {
     codeExecutionResultSender: (json) => {
       
         json["excutResDetail"] = {
-                //time: Math.floor(+ new Date() / 1000), // 수행 시간 (seconds 단위 타임스탬프)
                 time: moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),              // 수행 시간 (milliseconds 단위 타임스탬프)
                 mod: '0',                                // 수동 모드
                 res: true                                // 수행 성공
         }
-
-        console.log('Rabbit MQ 서버로 push 하는 데이터 -> ' + JSON.stringify(json));
+        
+        console.log('execute - codeExecutionResultSender Function');
+        console.log('json data -> ' + JSON.stringify(json));
 
         amqp.connect(AMQP_URL, (err, conn) => {
-            if(err){
-                loggerFactory.error('AMQP connection is failed');
-                return;
-            }
             conn.createChannel((err, ch) => {
-                if(err){
-                    loggerFactory.error('AMQP channel creation is failed');
-                    return;
-                }
                 ch.publish(
                     CLOG_TOPIC, 
                     CLOG_ROUTE, 
                     Buffer.from(JSON.stringify(json)), 
                     {contentType: 'application/json'}
                 )
-
-                console.log('execute - codeExecutionResultSender Function');
-                console.log('json data -> ' + json);
             });
         })
     },

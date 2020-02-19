@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var controlRouter = require('./routes/control');
 var interlockRouter = require('./routes/interlock');
+var viewRouter = require('./routes/view');
 
 var app = express();
 
@@ -20,14 +21,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 // Set Routers
 app.use('/control', controlRouter);
 app.use('/interlock', interlockRouter);
+app.use('/view', viewRouter);
 
-// test
-//const testRepo = require('./repositories/test-repo');
-//let rows = testRepo.selectAll();
-//console.info('rows -> ' + Buffer.from(JSON.stringify(rows)));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -45,5 +45,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;
