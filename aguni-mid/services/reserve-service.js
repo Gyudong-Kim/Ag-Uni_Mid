@@ -28,9 +28,9 @@ const reservDateTimeJob = (reservInfo, json, tableName) => {
              timeoutEvent: new Date(endDateTime).getTime() - new Date(startDateTime).getTime()
          };
         
-        // console.info('1. JOB Test -> (tableName) => ' + JSON.stringify(tableName));
-        // console.info('2. JOB Test -> (reservInfo) => ' + JSON.stringify(reservInfo));
-        // console.info('3. JOB Test -> (json) => ' + JSON.stringify(json));
+        console.info('1. JOB Test -> (tableName) => ' + JSON.stringify(tableName));
+        console.info('2. JOB Test -> (reservInfo) => ' + JSON.stringify(reservInfo));
+        console.info('3. JOB Test -> (json) => ' + JSON.stringify(json));
         
         zigbeeService.send(json);
         
@@ -125,4 +125,20 @@ module.exports = {
                 })
         }
     },
+
+    
+    deleteOxygenReservations: (json) => {
+        reservRepo.deleteOxygenReservs(json)
+            .catch((error) => {
+                console.error(error);
+            })
+    },
+
+
+    deleteLedReservations: (json) => {
+        reservRepo.deleteLedReservs(json)
+            .catch((error) => {
+                console.error(error);
+            })
+    },    
 }

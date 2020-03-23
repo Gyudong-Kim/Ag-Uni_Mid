@@ -60,6 +60,22 @@ module.exports = {
                 zigbeeService.send(json);
                 break;
 
+            // 추가
+            // 제어_관리기_공급 off (양액A + 양액B + 물)
+            case OP_CODE.C_M_006:
+                console.log(json.code + ' === C_M_006');
+                judgeService.judgeCtrWaterSupply(json);
+                zigbeeService.send(json);
+                break;
+
+            // 추가
+            // 제어_관리기_공급 off (물)
+            case OP_CODE.C_M_007:
+                console.log(json.code + ' === C_M_007');
+                judgeService.judgeCtrWaterSupply(json);
+                zigbeeService.send(json);
+                break;
+
             // 제어_관리기_공급 (물)
             case OP_CODE.C_M_008:
                 console.log(json.code + ' === C_M_008');
@@ -98,15 +114,17 @@ module.exports = {
             // 예약_조명_특정 조명 예약 취소
             case OP_CODE.R_L_200:
                 console.log(json.code + ' === R_L_200');
-                judgeService.judgeReservCancleLed(json);
-                zigbeeService.send(json);
+                reservService.deleteLedReservations(json);
+                //judgeService.judgeReservCancleLed(json);
+                //zigbeeService.send(json);
                 break;
 
             // 예약_관리기_특정 산소 예약 취소
             case OP_CODE.R_M_100:
                 console.log(json.code + ' === R_M_100');
-                judgeService.judgeReservCancleAir(json);
-                zigbeeService.send(json);
+                reservService.deleteOxygenReservations(json);
+                //judgeService.judgeReservCancleAir(json);
+                //zigbeeService.send(json);
                 break;
 
             default:

@@ -5,7 +5,7 @@ module.exports = {
     insertMultiTableSensorDataSet: async (sensorDataSet) => {
         let conn;
         let pool = db.pool;
-        console.info('insertMultiTableSensorDataSet -> ' + JSON.stringify(sensorDataSet.time));
+        //console.info('insertMultiTableSensorDataSet -> ' + JSON.stringify(sensorDataSet.time));
         try {
             conn = await pool.getConnection();
 

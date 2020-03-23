@@ -1,16 +1,46 @@
 var db = require('../config/db');
+var moment = require('moment');
 
 module.exports = {
 
-    deleteReserv: async (reservId, tableName) => {
+    deleteOxygenReservs: async (json) => {
         let conn;
         let pool = db.pool;
 
+        console.info(`oxygen reservatin ids => ${JSON.stringify(json)}`);
+
         try {
             conn = await pool.getConnection();
+            
+            for (let id of json.paramsDetail.reservIds) { 
+                console.info(id);
+                await conn.query(
+                    "DELETE FROM air_reserv WHERE reserv_id = (?)", id);    
+            }
 
-            await conn.query(
-                `DELETE FROM ${tableName} WHERE reserv_id = ?`, reservId);
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
+
+
+    deleteLedReservs: async (json) => {
+        let conn;
+        let pool = db.pool;
+
+        console.info(`led reservatin ids => ${JSON.stringify(json)}`);
+
+        try {
+            conn = await pool.getConnection();
+            
+            for (let id of json.paramsDetail.reservIds) { 
+                console.info(id);
+                await conn.query(
+                    "DELETE FROM led_reserv WHERE reserv_id = (?)", id);    
+            }
 
         } catch (error) {
             console.error(error);
@@ -165,6 +195,94 @@ module.exports = {
             };
             
             return reservInfo; // resolve         
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
+
+    selectOxygenReservs: async () => {
+        let conn;
+        let pool = db.pool;
+
+        let oxygenReserv = {
+            onceExecution: [],
+            periodExecution: []
+        }
+
+        try {
+            conn = await pool.getConnection();
+
+            const oxygenOnce = await conn.query(
+                "SELECT air_reserv.reserv_id, start_datetime, end_datetime FROM air_reserv INNER JOIN air_normal_reserv ON air_reserv.reserv_id = air_normal_reserv.reserv_id");
+            oxygenOnce.forEach(element => {
+                oxygenReserv.onceExecution.push({
+                    reservId: element.reserv_id,
+                    startDateTime: moment(element.start_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
+                    endDateTime: moment(element.end_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss')
+                });  
+            });
+
+            const oxygenPeriod = await conn.query(
+                "SELECT air_reserv.reserv_id, start_date, end_date, start_time, end_time FROM air_reserv INNER JOIN air_repeat_reserv ON air_reserv.reserv_id = air_repeat_reserv.reserv_id");
+            oxygenPeriod.forEach(element => {
+                oxygenReserv.periodExecution.push({
+                    reservId: element.reserv_id,
+                    startDate: moment(element.start_date).tz('Asia/Seoul').format('YYYY-MM-DD'),
+                    endDate: moment(element.end_date).tz('Asia/Seoul').format('YYYY-MM-DD'),
+                    startTime: element.start_time,
+                    endTime: element.end_time,
+                });
+            });
+
+            return oxygenReserv; // resolve         
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            if (conn) conn.release();
+        }
+    },
+
+    selectLedReservs: async () => {
+        let conn;
+        let pool = db.pool;
+
+        let ledReserv = {
+            onceExecution: [],
+            periodExecution: []
+        }
+
+        try {
+            conn = await pool.getConnection();
+
+            const ledOnce = await conn.query(
+                "SELECT air_reserv.reserv_id, start_datetime, end_datetime FROM air_reserv INNER JOIN air_normal_reserv ON air_reserv.reserv_id = air_normal_reserv.reserv_id");
+            ledOnce.forEach(element => {
+                ledReserv.onceExecution.push({
+                    reservId: element.reserv_id,
+                    startDateTime: moment(element.start_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
+                    endDateTime: moment(element.end_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss')
+                });  
+            });
+
+            const ledPeriod = await conn.query(
+                "SELECT air_reserv.reserv_id, start_date, end_date, start_time, end_time FROM air_reserv INNER JOIN air_repeat_reserv ON air_reserv.reserv_id = air_repeat_reserv.reserv_id");
+            ledPeriod.forEach(element => {
+                ledReserv.periodExecution.push({
+                    reservId: element.reserv_id,
+                    startDate: moment(element.start_date).tz('Asia/Seoul').format('YYYY-MM-DD'),
+                    endDate: moment(element.end_date).tz('Asia/Seoul').format('YYYY-MM-DD'),
+                    startTime: element.start_time,
+                    endTime: element.end_time,
+                });
+            });
+
+            return ledReserv; // resolve         
 
         } catch (error) {
             console.error(error);

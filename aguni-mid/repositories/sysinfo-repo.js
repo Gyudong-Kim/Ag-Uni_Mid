@@ -60,11 +60,13 @@ module.exports = {
                 json.mac,
                 json.farmerId,
                 json.houseId,
-                true            // interlock status
+                true,            // interlock status
+                false,           // sys_status
+                false            // cmod_statis
             ];
 
             await conn.query(
-                "INSERT INTO system (mac, farmer_id, house_id, interlock_status) values (?, ?, ?, ?)", params);
+                "INSERT INTO system (mac, farmer_id, house_id, interlock_status, sys_status, cmod_status) values (?, ?, ?, ?, ?, ?)", params);
                 
         } catch (error) {
             console.error(error);

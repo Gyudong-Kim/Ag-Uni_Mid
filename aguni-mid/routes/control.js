@@ -4,7 +4,7 @@ var filterService = require('../services/filter-service');
 var amqpService = require('../services/amqp-service');
 var requestService = require('../services/request-service');
 var sysinfoRepo = require('../repositories/sysinfo-repo')
-
+var constants = require('../common/constants');
 
 router.post('/code', function(req, res, next) {
 
@@ -12,20 +12,35 @@ router.post('/code', function(req, res, next) {
 
     try {
         filterService.filterAndExecute(req.body);
+        
+        let time = 10000;
+        
+        switch (req.body.code) {
+            // 제어_관리기_공급 off (양액A + 양액B + 물)
+            case constants.OP_CODE.C_M_006:
+                console.log('양액');
+                time = 10000;
+                break;
 
+            // 제어_관리기_공급 off (물)
+            case constants.OP_CODE.C_M_007:
+                console.log('물');
+                time = 10000;
+                break;
+        }
         // TODO : delete
         // A temporary alternative code to execute after receiving the opcode execution result from pcb using zigbee
         // this is async execution code after response message is sent to server app that requested to this app
         res.on('finish', setTimeout(() => {
            amqpService.codeExecutionResultSender(req.body)
-        }, 10000));
+        }, time));
         // 예약 기능 테스트 중이라 위 기능은 잠시 disable
         
-
         res.json({
-            tId: req.body.tId,
-            res: true
+            res: true,
+            tId: req.body.tId
         });
+
     } catch (err) {
         res.json({
             tId: req.body.tId,

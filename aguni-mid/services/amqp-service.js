@@ -2,8 +2,8 @@ var amqp = require('amqplib/callback_api')
 var moment = require('moment');
 
 
-//const AMQP_URL = `amqp://temp:temp@192.168.0.4:5672` // home and lab
-const AMQP_URL = `amqp://temp:temp@203.250.32.29:5672` // home and lab
+const AMQP_URL = `amqp://temp:temp@192.168.0.4:5672` // home and lab
+//const AMQP_URL = `amqp://temp:temp@203.250.32.29:5672` // lab
 
 const CLOG_ROUTE = 'clog.route'
 const CLOG_TOPIC = 'clog'
@@ -27,7 +27,15 @@ module.exports = {
         console.log('json data -> ' + JSON.stringify(json));
 
         amqp.connect(AMQP_URL, (err, conn) => {
+            if(err) {
+                loggerFactory.error('AMQP connection is failed');
+                return;            
+            }
             conn.createChannel((err, ch) => {
+                if(err){
+                    loggerFactory.error('AMQP channel creation is failed');
+                    return;
+                }
                 ch.publish(
                     CLOG_TOPIC, 
                     CLOG_ROUTE, 
@@ -40,7 +48,7 @@ module.exports = {
     
     // 센싱 데이터 Push
     sensorDataSetSender: (sensorDataSet) => {
-        console.info('sensorDataSetSender -> ' + JSON.stringify(sensorDataSet));
+        //console.info('sensorDataSetSender -> ' + JSON.stringify(sensorDataSet));
 
         amqp.connect(AMQP_URL, (err, conn) => {
             if(err) {

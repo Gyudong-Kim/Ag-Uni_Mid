@@ -1,8 +1,8 @@
 
 module.exports = {
     send: (json) => {
-        const jstr = JSON.stringify(json);
-        const jstrlen = jstr.length;//(전체 길이)
+        //const jstr = JSON.stringify(json);
+        //const jstrlen = jstr.length;//(전체 길이)
 
         /*
         const packetlen = 63;//(최대 길이=63)
@@ -16,9 +16,9 @@ module.exports = {
         const v = (jstrlen-m)/c;//몫(인덱스)
         */
 
-        console.log("데이터 : "+jstr);
-        console.log("길이 : "+jstrlen);
-        port.write(jstr);
+        //console.log("데이터 : "+jstr);
+        //console.log("길이 : "+jstrlen);
+        //port.write(jstr);
 
         /*for(var i=0; i<v; i++){
             var jsub = jstr.substr(i*c,c);
