@@ -19,15 +19,21 @@ router.post('/code', function(req, res, next) {
             // 제어_관리기_공급 off (양액A + 양액B + 물)
             case constants.OP_CODE.C_M_006:
                 console.log('양액');
-                time = 10000;
+                time = 30000;
                 break;
 
             // 제어_관리기_공급 off (물)
             case constants.OP_CODE.C_M_007:
                 console.log('물');
-                time = 10000;
+                time = 30000;
+                break;
+
+            case constants.OP_CODE.C_M_009:
+                console.log('산소');
+                time = 30000;
                 break;
         }
+        
         // TODO : delete
         // A temporary alternative code to execute after receiving the opcode execution result from pcb using zigbee
         // this is async execution code after response message is sent to server app that requested to this app
