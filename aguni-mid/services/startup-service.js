@@ -8,26 +8,27 @@ var publicIp = require('public-ip');
 var natUpnp = require('nat-upnp');
 var requestService = require('./request-service');
 
-const SerialPort = require('serialport');
-const port = new SerialPort('/dev/ttyS0',{baudRate:9600});
 
-var temp='';
-port.on('open', function(){
-	console.log('start');
+const SerialPort = require('serialport');
+const port = new SerialPort('/dev/ttyS0', { baudRate: 9600 });
+
+var temp = '';
+port.on('open', function () {
+    console.log('start');
 });
 
 port.on('readable', function () {
     console.log('Data1:', port.read());
 })
 
-port.on('data', function(data){
-    temp+=data;
+port.on('data', function (data) {
+    temp += data;
     console.log(temp.length);
 });
 
 module.exports = {
     start: async () => {
-        
+
         macaddress.one('eth0', (err, mac) => {
             if (err) {
                 console.error('cannot search Eth0 MAC address');
@@ -44,7 +45,7 @@ module.exports = {
                                 mac: mac
                             });
                         })
-                    } 
+                    }
                     else {
                         console.log('aleardy exist Eth0 MAC addr');
                     }
@@ -55,196 +56,196 @@ module.exports = {
 
             // TODO : DELETE, 임의로 분 단위 데이터 셋 생성
             let sensorDataSet = {
-                farmerId: 1,
-                houseId: 52,
+                farmerId: 51,
+                houseId: 2,
                 cultivationId: 1,
                 time: moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
                 exSensorDataSet: {
                     insol: Math.floor(Math.random() * 70),
-                    temp: Math.floor(Math.random() * 201) -100,
-                    humi: Math.floor(Math.random() * 201) -100,
-                    co2: Math.floor(Math.random() * 201) -100
+                    temp: Math.floor(Math.random() * 201) - 100,
+                    humi: Math.floor(Math.random() * 201) - 100,
+                    co2: Math.floor(Math.random() * 201) - 100
                 },
                 farmSensorDataSetList: [
                     {
                         farmId: 1,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 1,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 2,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 2,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 3,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 3,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 4,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 4,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 5,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 5,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 6,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 6,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 7,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 7,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 8,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 8,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 9,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 9,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 10,
                         farmLayer: 1,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     },
                     {
                         farmId: 10,
                         farmLayer: 3,
-                        ec: Math.floor(Math.random() * 30) -10,
-                        ph: Math.floor(Math.random() * 30) -10,
-                        temp: Math.floor(Math.random() * 30) -10,
-                        humi: Math.floor(Math.random() * 30) -10,
-                        co2: Math.floor(Math.random() * 30) -10
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
                     }
                 ]
             };
@@ -259,7 +260,7 @@ module.exports = {
 
 // const externalIp = await publicIp.v4();
         // console.info(externalIp);
-        
+
         // var client = natUpnp.createClient();
 
 
@@ -276,7 +277,7 @@ module.exports = {
         //     if (!err) console.info('upnp port mapping successed');
         //     else      console.info('upnp port mapping failed');
         // })
-        
+
         // client.getMappings({ local: true }, function(err, results) {
         //     console.info(JSON.stringify(results));
         // });

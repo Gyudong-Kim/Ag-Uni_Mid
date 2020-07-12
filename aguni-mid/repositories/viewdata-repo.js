@@ -2,12 +2,15 @@ var db = require('./../config/db');
 var moment = require('moment');
 
 module.exports = {
-    
-    selectMainViewDataSet: async () => {
+
+    selectHouseModuleDataSet: async () => {
         let conn;
         let pool = db.pool;
 
-        let mainViewDataSet = {
+        let houseModuleDataSet = {
+            farmerId: null,
+            houseId: null,
+            cultivationId: null,
             status: { isSysOn: null, isAutoOn: null },
             exSensorData: { temp: null, humi: null, co2: null, insol: null },
             farmList: [],
@@ -16,22 +19,26 @@ module.exports = {
         try {
             conn = await pool.getConnection();
 
-            const sysRows = await conn.query("SELECT sys_status, cmod_status, cultivation_id FROM system");
-            mainViewDataSet.status.isSysOn = sysRows[0].sys_status;
-            mainViewDataSet.status.isAutoOn = sysRows[0].cmod_status;
+            const sysRows = await conn.query("SELECT sys_status, cmod_status, farmer_id, house_id, cultivation_id FROM system");
+            houseModuleDataSet.farmerId = sysRows[0].farmer_id;
+            houseModuleDataSet.houseId = sysRows[0].house_id;
+            houseModuleDataSet.cultivationId = sysRows[0].cultivation_id;
+            houseModuleDataSet.status.isSysOn = sysRows[0].sys_status;
+            houseModuleDataSet.status.isAutoOn = sysRows[0].cmod_status;
 
-            if(sysRows[0].cultivation_id !== null) {
-                
+
+            if (sysRows[0].cultivation_id !== null) {
+
                 const exSensorDataRows = await conn.query("SELECT co2, insol, temp, humi FROM ex_sensor_data ORDER BY time DESC LIMIT 1");
-                mainViewDataSet.exSensorData.temp = exSensorDataRows[0].temp;
-                mainViewDataSet.exSensorData.humi =  exSensorDataRows[0].humi;
-                mainViewDataSet.exSensorData.co2 =  exSensorDataRows[0].co2;
-                mainViewDataSet.exSensorData.insol =  exSensorDataRows[0].insol;
+                houseModuleDataSet.exSensorData.temp = exSensorDataRows[0].temp;
+                houseModuleDataSet.exSensorData.humi = exSensorDataRows[0].humi;
+                houseModuleDataSet.exSensorData.co2 = exSensorDataRows[0].co2;
+                houseModuleDataSet.exSensorData.insol = exSensorDataRows[0].insol;
 
 
                 const farmsRows = await conn.query("SELECT * FROM farm");
-                if(farmsRows !== null){
-                    farmsRows.forEach(element => mainViewDataSet.farmList.push({
+                if (farmsRows !== null) {
+                    farmsRows.forEach(element => houseModuleDataSet.farmList.push({
                         farmId: element.farm_id,
                         farmIdx: element.farm_idx,
                         farmName: element.farm_name
@@ -39,7 +46,7 @@ module.exports = {
                 }
             }
 
-            return mainViewDataSet;
+            return houseModuleDataSet;
 
         } catch (error) {
             console.error(error);
@@ -58,9 +65,9 @@ module.exports = {
             cultivationId: null,
             isSysOn: null,
             isAutoOn: null,
-            reserv: {ledReserv: {onceExecution: [],periodExecution: [] },oxygenReserv: {onceExecution: [],periodExecution: []}},
-//            exSensorData: {temp: {value: 32.7,status: true},humi: {value: 32.7,status: true},co2: {value: 32.7,status: true},insol: {value: 32.7,status: true}},
-            exSensorData: {temp: null, humi: null, co2: null, insol: null},
+            reserv: { ledReserv: { onceExecution: [], periodExecution: [] }, oxygenReserv: { onceExecution: [], periodExecution: [] } },
+            //            exSensorData: {temp: {value: 32.7,status: true},humi: {value: 32.7,status: true},co2: {value: 32.7,status: true},insol: {value: 32.7,status: true}},
+            exSensorData: { temp: null, humi: null, co2: null, insol: null },
             farmBoxInfoList: []
         };
 
@@ -83,9 +90,9 @@ module.exports = {
                     qunttyOfLight: element.quntty_of_light,
                     startDateTime: moment(element.start_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
                     endDateTime: moment(element.end_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss')
-                });  
+                });
             });
-            
+
             const ledPeriod = await conn.query(
                 "SELECT led_reserv.reserv_id, quntty_of_light, start_date, end_date, start_time, end_time FROM led_reserv INNER JOIN led_repeat_reserv ON led_reserv.reserv_id = led_repeat_reserv.reserv_id");
             ledPeriod.forEach(element => {
@@ -106,7 +113,7 @@ module.exports = {
                     reservId: element.reserv_id,
                     startDateTime: moment(element.start_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
                     endDateTime: moment(element.end_datetime).tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss')
-                });  
+                });
             });
 
             const oxygenPeriod = await conn.query(
@@ -123,7 +130,7 @@ module.exports = {
 
             const farmBoxInfo = await conn.query(
                 "SELECT farm.farm_id, farm.farm_idx, farm.farm_name, AVG(temp) AS temp, AVG(humi) AS humi, AVG(co2) AS co2, AVG(ec) AS ec, AVG(ph) AS ph FROM farm INNER JOIN farm_sensor_data ON farm.farm_id = farm_sensor_data.farm_id WHERE farm_sensor_data.time >= DATE_ADD(now(), INTERVAL -1 MINUTE) GROUP BY farm_id")
-                //"SELECT * FROM farm INNER JOIN farm_sensor_data ON farm.farm_id = farm_sensor_data.farm_id WHERE  farm_sensor_data.time >= DATE_ADD(now(), INTERVAL -1 MINUTE)");
+            //"SELECT * FROM farm INNER JOIN farm_sensor_data ON farm.farm_id = farm_sensor_data.farm_id WHERE  farm_sensor_data.time >= DATE_ADD(now(), INTERVAL -1 MINUTE)");
             farmBoxInfo.forEach(element => {
                 houseViewDataSet.farmBoxInfoList.push({
                     farmId: element.farm_id,

@@ -2,19 +2,28 @@ var express = require('express');
 var router = express.Router();
 var viewdataRepo = require('../repositories/viewdata-repo');
 var resersvRepo = require('../repositories/reserve-repo');
+var amqpService = require('../services/amqp-service');
 
+router.get('/main', function (req, res, next) {
+    viewdataRepo.selectHouseModuleDataSet()
+        .then((houseModuleDataSet) => {
 
-router.get('/main', function(req, res, next) {
-    viewdataRepo.selectMainViewDataSet()
-        .then((mainViewDataSet) => {
-            console.info('test => ' + JSON.stringify(mainViewDataSet));
-            console.info('main close');
-            res.json(mainViewDataSet);
+            setTimeout(() => {
+                amqpService.houseModuleDataSetSenser(houseModuleDataSet);
+                console.info('test => ' + JSON.stringify(houseModuleDataSet));
+                console.info('main close');
+            }, 8000);
+            console.info('response')
+            res.json(true);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.json(false);
         })
 });
 
 
-router.get('/house', function(req, res, next) {
+router.get('/house', function (req, res, next) {
     viewdataRepo.selectHouseViewDataSet()
         .then((houseViewDataSet) => {
             console.info('test => ' + JSON.stringify(houseViewDataSet));
@@ -22,14 +31,14 @@ router.get('/house', function(req, res, next) {
         })
 });
 
-router.get('/reservs/:reservType', function(req, res, next) {
-    if(req.params.reservType === `OXYGEN`) {
+router.get('/reservs/:reservType', function (req, res, next) {
+    if (req.params.reservType === `OXYGEN`) {
         resersvRepo.selectOxygenReservs()
             .then((reservs) => {
                 console.info(`oxygen reservs => ${JSON.stringify(reservs)}`)
                 res.json(reservs);
             })
-    } else if(req.params.reservType === `LED`) {
+    } else if (req.params.reservType === `LED`) {
         resersvRepo.selectLedReservs()
             .then((reservs) => {
                 console.info(`led reservs => ${JSON.stringify(reservs)}`)
@@ -39,4 +48,3 @@ router.get('/reservs/:reservType', function(req, res, next) {
 })
 
 module.exports = router;
-                                               

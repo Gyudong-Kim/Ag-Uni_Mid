@@ -1,7 +1,7 @@
 const request = require('request');
 
-const MAIN_SERVER_URL = 'http://192.168.0.4:8084';
-const API_SERVER_URL = 'http://192.168.0.4:8083';
+const MAIN_SERVER_URL = 'http://192.168.0.22:8084';
+const API_SERVER_URL = 'http://192.168.0.22:8083';
 
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
         }
 
         request.post(options, (err, httpResponse, body) => {
-            if(httpResponse.statusCode !== 201) {
+            if (httpResponse.statusCode !== 201) {
                 console.error(err);
             } else {
                 console.info('change waitable status');
@@ -35,14 +35,14 @@ module.exports = {
                 farmerId: json.farmerId,
                 houseId: json.houseId,
                 cultivationId: json.cultivationId,
-                cropId: json.cropId 
+                cropId: json.cropId
             },
             json: true
         }
-        
+
         return new Promise((resolve, reject) => {
             request.post(options, (err, httpResponse, body) => {
-                if(httpResponse.statusCode !== 201) {
+                if (httpResponse.statusCode !== 201) {
                     console.error(err);
                     reject(false);
                 } else {
