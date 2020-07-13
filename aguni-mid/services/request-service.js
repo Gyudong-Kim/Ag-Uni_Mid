@@ -1,7 +1,7 @@
 const request = require('request');
 
-const MAIN_SERVER_URL = 'http://192.168.0.22:8084';
-const API_SERVER_URL = 'http://192.168.0.22:8083';
+const MAIN_SERVER_URL = 'http://203.250.32.29:8080';
+const API_SERVER_URL = 'http://203.250.32.29:8083';
 
 
 module.exports = {
