@@ -2,8 +2,8 @@ var amqp = require('amqplib/callback_api')
 var moment = require('moment');
 
 
-// const AMQP_URL = `amqp://temp:temp@1.251.103.64:5672` // home
-const AMQP_URL = `amqp://temp:temp@203.250.32.29:54326` // lab
+const AMQP_URL = `amqp://temp:temp@1.251.103.64:5672` // home
+//const AMQP_URL = `amqp://temp:temp@203.250.32.29:54326` // lab
 
 const CLOG_ROUTE = 'clog.route'
 const CLOG_TOPIC = 'clog'
@@ -86,6 +86,7 @@ module.exports = {
                     loggerFactory.error('AMQP channel creation is failed');
                     return;
                 }
+                console.info(JSON.stringify(houseModuleDataSet))
                 ch.publish(
                     HOUSE_MODULE_TOPIC,
                     HOUSE_MODULE_ROUTE,

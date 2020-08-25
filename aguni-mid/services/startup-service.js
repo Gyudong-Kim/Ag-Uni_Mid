@@ -57,7 +57,7 @@ module.exports = {
             // TODO : DELETE, 임의로 분 단위 데이터 셋 생성
             let sensorDataSet = {
                 farmerId: 68,
-                houseId: 3,
+                houseId: 4,
                 cultivationId: 1,
                 time: moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
                 exSensorDataSet: {

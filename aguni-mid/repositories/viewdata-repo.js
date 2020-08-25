@@ -46,6 +46,10 @@ module.exports = {
                 }
             }
 
+            if (houseModuleDataSet.cultivationId === null) {
+                houseModuleDataSet.cultivationId = -1
+            }
+
             return houseModuleDataSet;
 
         } catch (error) {

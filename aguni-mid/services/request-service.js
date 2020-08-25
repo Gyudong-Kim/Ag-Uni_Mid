@@ -1,7 +1,7 @@
 const request = require('request');
 
-const MAIN_SERVER_URL = 'http://203.250.32.29:8080';
-const API_SERVER_URL = 'http://203.250.32.29:8083';
+const MAIN_SERVER_URL = 'http://1.251.103.64:8084';
+const API_SERVER_URL = 'http://1.251.103.64:8083';
 
 
 module.exports = {
@@ -18,8 +18,9 @@ module.exports = {
         }
 
         request.post(options, (err, httpResponse, body) => {
+            console.error(JSON.stringify(httpResponse))
             if (httpResponse.statusCode !== 201) {
-                console.error(err);
+                console.error("Hello Errors")
             } else {
                 console.info('change waitable status');
             }
@@ -47,6 +48,7 @@ module.exports = {
                     reject(false);
                 } else {
                     console.info('start cultivation');
+                    console.info(JSON.stringify(body));
                     resolve(true);
                 }
             })
