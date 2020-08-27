@@ -31,6 +31,7 @@ router.get('/house', function (req, res, next) {
         })
 });
 
+// 구현상의 문제로 클라이언트에서 예약 성공 시에 예약 데이터를 다시 받아오게 하기 위해 만든 API
 router.get('/reservs/:reservType', function (req, res, next) {
     if (req.params.reservType === `OXYGEN`) {
         resersvRepo.selectOxygenReservs()
