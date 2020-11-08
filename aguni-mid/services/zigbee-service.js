@@ -1,10 +1,25 @@
+/*const SerialPort = require('serialport');
+const port = new SerialPort('/dev/serial0', { baudRate: 9600 });
+
+var temp = '';
+port.on('open', function () {
+    console.log('start');
+});
+
+port.on('readable', function () {
+    console.log('Data1:', port.read());
+})
+
+port.on('data', function (data) {
+    temp += data;
+    console.log(temp.length);
+});*/
 
 module.exports = {
     send: (json) => {
-        //const jstr = JSON.stringify(json);
-        //const jstrlen = jstr.length;//(전체 길이)
+        const jstr = JSON.stringify(json);
+        const jstrlen = jstr.length;//(전체 길이)
 
-        /*
         const packetlen = 63;//(최대 길이=63)
         const indexlen = 1;//인덱스 길이 값
         const datalen = 3;//전체 데이터 길이 값
@@ -14,12 +29,15 @@ module.exports = {
         const c = packetdatalen;//분할 길이
         const m = jstrlen%c;//나머지
         const v = (jstrlen-m)/c;//몫(인덱스)
-        */
+	
+	var code = json.code;	
+	var send = {"CODE" : code};
 
-        //console.log("데이터 : "+jstr);
-        //console.log("길이 : "+jstrlen);
-        //port.write(jstr);
+        console.log("데이터 : "+code);
+        console.log("길이 : "+jstrlen);
 
+    	port.write(JSON.stringify(send));
+	
         /*for(var i=0; i<v; i++){
             var jsub = jstr.substr(i*c,c);
             port.write(jsub);

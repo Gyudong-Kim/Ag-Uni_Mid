@@ -1,5 +1,6 @@
-var zigbeeService = require('./zigbee-service')
+//var zigbeeService = require('./zigbee-service')
 var reservRepo = require('./../repositories/reserve-repo');
+var startupService = require('../services/startup-service');
 const CronJob = require('cron').CronJob;
 
 // for (output in reservList){
@@ -32,10 +33,12 @@ const reservDateTimeJob = (reservInfo, json, tableName) => {
         console.info('2. JOB Test -> (reservInfo) => ' + JSON.stringify(reservInfo));
         console.info('3. JOB Test -> (json) => ' + JSON.stringify(json));
 
-        zigbeeService.send(json);
+        startupService.send(json);
 
-        reservRepo.deleteReserv(reservInfo.reservId, tableName);
+        //reservRepo.deleteReserv(reservInfo.reservId, tableName);
 
+	reservRepo.deleteOxygenReservs(reservInfo.reservId, tableName);	
+	
         this.stop();
     }, function () {
         console.info('JOB STOP');
@@ -73,7 +76,7 @@ const reservPeriodJob = (reservInfo, json, tableName) => {
             timeoutEvent: startDateTime.getTime() - endDateTime.getTime()
         }
 
-        zigbeeService.send(json);
+        startupService.send(json);
 
     }, function () {
         console.info('JOB STOP');

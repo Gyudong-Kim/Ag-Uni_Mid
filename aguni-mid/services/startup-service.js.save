@@ -1,0 +1,335 @@
+const CronJob = require('cron').CronJob;
+var amqpService = require('./amqp-service');
+var macaddress = require('macaddress');
+var sysinfoRepo = require('./../repositories/sysinfo-repo');
+var sensordataRepo = require('./../repositories/sensordata-repo');
+var moment = require('moment');
+var publicIp = require('public-ip');
+var natUpnp = require('nat-upnp');
+var requestService = require('./request-service');
+
+const SerialPort = require('serialport');
+const port = new SerialPort('/dev/serial0', { baudRate: 9600 });
+
+var temp = '';
+var sensingData= '';
+port.on('open', function () {
+    console.log('start');
+});
+
+port.on('readable', function () {
+    port.read();
+})
+
+port.on('data', function (data) {
+    //temp += data;
+    //console.log(temp.length);
+
+    temp=data.toString();//패킷 저장
+    console.log('packet ->' + temp);
+    if(temp.lastIndexOf("#")!=-1){//마지막 패킷인지 판별
+        sensingData+=temp.substring(0,temp.lastIndexOf("#"));//마지막 패킷에서 끝 문자 # 제거 후 저장
+        console.log('sensingData -> ' + sensingData);
+        sensingData='';
+        temp='';
+        console.log('received!');
+    }
+    else{
+        sensingData+=temp;//패킷을 누적시켜 원래 데이터 형태로 저장
+    }
+});
+
+module.exports = {
+    start: async () => {
+
+        macaddress.one('eth0', (err, mac) => {
+            if (err) {
+                console.error('cannot search Eth0 MAC address');
+                throw err;
+            }
+
+            sysinfoRepo.selectMac()
+                .then(res => {
+                    if (res === null) {
+                        console.log('no exist Eth0 MAC addr');
+                        publicIp.v4().then(externalIp => {
+                            requestService.waitInterLock({
+                                externalIp: externalIp,
+                                mac: mac
+                            });
+                        })
+                    }
+                    else {
+                        console.log('aleardy exist Eth0 MAC addr');
+                    }
+                });
+        });
+
+        const sensingJob = new CronJob('0/10 * * * * *', function () {
+	    { port.write('#'); }
+
+            // TODO : DELETE, 임의로 분 단위 데이터 셋 생성
+            let sensorDataSet = {
+                farmerId: 1,
+                houseId: 1,
+                cultivationId: 1,
+                time: moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
+                
+	console.log(sensingData);
+		/* exSensorDataSet: {
+                    insol: Math.floor(Math.random() * 70),
+                    temp: Math.floor(Math.random() * 201) - 100,
+                    humi: Math.floor(Math.random() * 201) - 100,
+                    co2: Math.floor(Math.random() * 201) - 100
+                },
+                farmSensorDataSetList: [
+                    {
+                        farmId: 1,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 1,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 2,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 2,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 3,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 3,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 4,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 4,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 5,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 5,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 6,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 6,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 7,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 7,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 8,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 8,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 9,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 9,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 10,
+                        farmLayer: 1,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    },
+                    {
+                        farmId: 10,
+                        farmLayer: 3,
+                        ec: Math.floor(Math.random() * 30) - 10,
+                        ph: Math.floor(Math.random() * 30) - 10,
+                        temp: Math.floor(Math.random() * 30) - 10,
+                        humi: Math.floor(Math.random() * 30) - 10,
+                        co2: Math.floor(Math.random() * 30) - 10
+                    }
+                ]
+            };*/
+
+            //sensordataRepo.insertMultiTableSensorDataSet(sensorDataSet);
+
+            amqpService.sensorDataSetSender(sensorDataSet);
+        })
+        sensingJob.start();
+    },
+
+    send: (json) => {
+        const jstr = JSON.stringify(json);
+        const jstrlen = jstr.length;//(전체 길이)
+
+        const packetlen = 63;//(최대 길이=63)
+        const indexlen = 1;//인덱스 길이 값
+        const datalen = 3;//전체 데이터 길이 값
+        const separatorlen = 2;//구분자 데이터 길이 값
+        const packetdatalen = packetlen-indexlen-datalen-separatorlen;//실제 데이터 길이
+
+        const c = packetdatalen;//분할 길이
+        const m = jstrlen%c;//나머지
+        const v = (jstrlen-m)/c;//몫(인덱스)
+	
+	var code = json.code;	
+	var send = {"CODE" : code};
+
+        console.log("데이터 : "+code);
+        console.log("길이 : "+jstrlen);
+
+    	port.write(JSON.stringify(send));
+	
+        /*for(var i=0; i<v; i++){
+            var jsub = jstr.substr(i*c,c);
+            port.write(jsub);
+            console.log(i+" : "+jsub);
+            if(i==v-1&&m>0){
+                jsub = jstr.substr((i+1)*c,(i+1)*c-1+m);
+                port.write(jsub);
+                console.log((i+1)+" : "+jsub);
+            }
+        }*/
+        // pcb 로 json 데이터 전송
+        // pcb 에서도 code를 필터해서 적절한 동작을 하는 코드를 작성해야함
+    }
+}
+
+// const externalIp = await publicIp.v4();
+        // console.info(externalIp);
+
+        // var client = natUpnp.createClient();
+
+
+        //   client.portUnmapping({
+        //       public: 54444
+        //   });
+
+        // client.portMapping({
+        //     public: 54444,
+        //     private: 3000,
+        //     ttl: 0
+        // }, function(err) {
+        //     console.log(err)
+        //     if (!err) console.info('upnp port mapping successed');
+        //     else      console.info('upnp port mapping failed');
+        // })
+
+        // client.getMappings({ local: true }, function(err, results) {
+        //     console.info(JSON.stringify(results));
+        // });

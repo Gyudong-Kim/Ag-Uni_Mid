@@ -4,9 +4,9 @@ var mariadb = require('mariadb');
 // mariadb config object
 var config = {
     // host: "192.168.0.19",   
-    host: "192.168.0.42",
+    host: "192.168.1.6",
     user: "root",           // 사용자
-    password: "tkddnjs234", // DB 비번
+    password: "a28a01a!", // DB 비번
     database: "aguni_mid",
     connectionLimit: 5
 }

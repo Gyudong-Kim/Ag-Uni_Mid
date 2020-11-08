@@ -1,8 +1,10 @@
 const request = require('request');
 
-const MAIN_SERVER_URL = 'http://1.251.103.64:8084';
-const API_SERVER_URL = 'http://1.251.103.64:8083';
+const MAIN_SERVER_URL = 'http://192.168.1.9:8084'; //lab
+const API_SERVER_URL = 'http://192.168.1.9:8083'; //lab
 
+//const MAIN_SERVER_URL = 'http://203.250.32.29:8084'; //home
+//const API_SERVER_URL = 'http://203.250.32.29:8083'; //home
 
 module.exports = {
 

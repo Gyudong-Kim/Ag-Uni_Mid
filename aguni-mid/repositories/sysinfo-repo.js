@@ -53,7 +53,6 @@ module.exports = {
 
         try {
             conn = await pool.getConnection();
-
             console.info('interlock try => ' + JSON.stringify(json));
 
             const params = [

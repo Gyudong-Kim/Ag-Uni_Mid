@@ -33,7 +33,8 @@ module.exports = {
                 ]
             );
 
-            let farmSensorDataSetList = sensorDataSet.farmSensorDataSetList;
+            
+	    let farmSensorDataSetList = sensorDataSet.farmSensorDataSetList;
             farmSensorDataSetList.forEach( async (obj) => {
                 await conn.query(
                     "INSERT INTO farm_sensor_data (time, farm_id, farm_layer, ec, ph, temp, humi, co2) values (?, ?, ?, ?, ?, ?, ?, ?)",
