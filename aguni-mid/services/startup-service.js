@@ -22,14 +22,14 @@ port.on('readable', function () {
 })
 
 port.on('data', function (data) {
-    temp += data;
+    //temp += data;
     //console.log(temp.length);
 
-    //temp=data.toString();//패킷 저장
+    temp=data.toString(); // 패킷 저장
     console.log('packet ->' + temp);
-    if(temp.lastIndexOf("#")!=-1){//마지막 패킷인지 판별
-        sensingData+=temp.substring(0,temp.lastIndexOf("#"));//마지막 패킷에서 끝 문자 # 제거 후 저장
-        console.log('sensingData -> ' + sensingData);
+    if(temp.lastIndexOf("#")!=-1){ // 마지막 패킷인지 판별
+        sensingData+=temp.substring(0,temp.lastIndexOf("#")); // 마지막 패킷에서 끝 문자 # 제거 후 저장
+	console.log('sensingData -> ' + sensingData);
         console.log('received!');
     }
     else{
@@ -66,37 +66,36 @@ module.exports = {
         const sensingJob = new CronJob('0 * * * * *', function () {
 	    { port.write('#'); }
 	    
-	    var sendData = new String(sensingData);
+	    setTimeout(function() {
+		let sensorDataSet = {
+		farmerId : 10,
+		houseId : 17,
+		cultivationId : 1,
+		time : moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
+		exSensorDataSet: {
+                    insol: 10,
+                    temp: 20,
+                    humi: 10,
+                    co2: 25
+                },
+                farmSensorDataSetList: [
+                    {
+                        farmId: 1,
+                        farmLayer: 1,
+                        ec: 10,
+                        ph: 8,
+                        temp: 22,
+                        humi: 13,
+                        co2: 30
+                    }
+	    ]};
 	    
-	    let sensorDataSet = {
-		"farmerId" : 10,
-		"houseId" : 17,
-		"cultivationId" : 1,
-		"time" : moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
-		sendData
-		/*"exSensorDataSet" : {
-		    "insol" : JSON.parse(sensingData).insol,
-		    "temp" : JSON.parse(sensingData).temp,
-		    "humi" : JSON.parse(sensingData).humi,
-		    "co2" : JSON.parse(sensingData).co2
-		},
-		"farmSensorDataSetList" : [
-		    {
-			"farmId" : sensingData.farmSensorDataSetList.farmId,
-			"farmLayer" : sensingData.farmSensorDataSetList.farmLayer,
-			"ec" : sensingData.farmSensorDataSetList.ec,
-			"ph" : sensingData.farmSensorDataSetList.ph,
-			"temp" : sensingData.farmSensorDataSetList.temp,
-			"humi" : sensingData.farmSensorDataSetList.temp,
-		    }]*/
-	    };
-	    console.log(sensorDataSet);
-            
-            //sensordataRepo.insertMultiTableSensorDataSet(sensorDataSet);
-            //amqpService.sensorDataSetSender(sensorDataSet);
+            sensordataRepo.insertMultiTableSensorDataSet(sensorDataSet);
+            amqpService.sensorDataSetSender(sensorDataSet);
 	    sensingData='';
             temp='';
-        })
+	    }, 5000);
+	});
         sensingJob.start();
     },
 
@@ -131,7 +130,18 @@ module.exports = {
 		port.write(JSON.stringify(send));
 		console.log("Success");
 		break;
-
+	    case 'C_M_006' :
+		var code = json.code;
+		var send = {"CODE" : code}
+		port.write(JSON.stringify(send));
+		console.log("Success");
+		break;
+	    case 'C_M_007' :
+		var code = json.code;
+		var send = {"CODE" : code}
+		port.write(JSON.stringify(send));
+		console.log("Success");
+		break;
 	    case 'C_M_008':
 		var code = json.code;
 		var seconds = json.paramsDetail.waterSupplySeconds;
