@@ -13,6 +13,19 @@ const port = new SerialPort('/dev/serial0', { baudRate: 9600 });
 
 var temp = '';
 var sensingData= '';
+var json = '';
+var exinsol = '';
+var extemp = '';
+var exhumi = '';
+var exco2 = '';
+var farmId = '';
+var farmLayer = '';
+var ec = '';
+var ph = '';
+var temp = '';
+var humi = '';
+var co2 = '';
+
 port.on('open', function () {
     console.log('start');
 });
@@ -30,11 +43,26 @@ port.on('data', function (data) {
     if(temp.lastIndexOf("#")!=-1){ // 마지막 패킷인지 판별
         sensingData+=temp.substring(0,temp.lastIndexOf("#")); // 마지막 패킷에서 끝 문자 # 제거 후 저장
 	console.log('sensingData -> ' + sensingData);
-        console.log('received!');
+	console.log('received!');
+
+	json = JSON.parse(sensingData);
+	exinsol = json.exSensorDataSet.insol;
+	extemp = json.exSensorDataSet.temp;
+	exhumi = json.exSensorDataSet.humi;
+	exco2 = json.exSensorDataSet.co2;
+
+	farmId = json.farmSensorDataSetList.farmId;	
+	farmLayer = json.farmSensorDataSetList.farmLayer;
+	ec = json.farmSensorDataSetList.ec;
+	ph = json.farmSensorDataSetList.ph;
+	temp = json.farmSensorDataSetList.temp;
+	humi = json.farmSensorDataSetList.humi;
+	co2 = json.farmSensorDataSetList.co2;
+	console.log(json);
     }
     else{
         sensingData+=temp;//패킷을 누적시켜 원래 데이터 형태로 저장
-    }
+    }      
 });
 
 module.exports = {
@@ -63,35 +91,35 @@ module.exports = {
                 });
         });
 
-        const sensingJob = new CronJob('0 * * * * *', function () {
+        const sensingJob = new CronJob('0 * * * * *', function(json)  {
 	    { port.write('#'); }
 	    
-	    setTimeout(function() {
+	  setTimeout(function(json) {
 		let sensorDataSet = {
-		farmerId : 10,
-		houseId : 17,
+		farmerId : 3,
+		houseId : 3,
 		cultivationId : 1,
 		time : moment().tz('Asia/Seoul').format('YYYY-MM-DDTHH:mm:ss'),
 		exSensorDataSet: {
-                    insol: 10,
-                    temp: 20,
-                    humi: 10,
-                    co2: 25
+                    insol: exinsol,
+                    temp: extemp,
+                    humi: exhumi,
+                    co2: exco2
                 },
                 farmSensorDataSetList: [
                     {
-                        farmId: 1,
-                        farmLayer: 1,
-                        ec: 10,
-                        ph: 8,
-                        temp: 22,
-                        humi: 13,
-                        co2: 30
+                        farmId: farmId,
+                        farmLayer: farmLayer,
+                        ec: ec,
+                        ph: ph,
+                        temp: temp,
+                        humi: humi,
+                        co2: co2
                     }
 	    ]};
-	    
             sensordataRepo.insertMultiTableSensorDataSet(sensorDataSet);
             amqpService.sensorDataSetSender(sensorDataSet);
+	    console.log(sensorDataSet);
 	    sensingData='';
             temp='';
 	    }, 5000);
